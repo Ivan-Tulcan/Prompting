@@ -36,8 +36,10 @@ Reescribir la plataforma desde AngularJS en el framework Angular 19.2.14 utiliza
 
 ## Análisis
 
-### Angular 19: Saltar directamente a una de las versiones más recientes de Angular, abandonando por completo AngularJS. Esto implica que no se puede reutilizar casi nada del código del framework (controladores, scopes, directivas de AngularJS).
-### Micro-Frontends (Module Federation): La dependencia @angular-architects/module-federation y el script run:all son el indicio más claro. La nueva arquitectura no será un monolito como la actual. Se basará en micro-frontends, donde diferentes partes de la aplicación (como Seguridad, Cash, Afiliaciones) pueden ser desarrolladas y desplegadas de forma independiente como aplicaciones Angular separadas que se integran en un "shell" o contenedor principal.
+### Angular 19: 
+Saltar directamente a una de las versiones más recientes de Angular, abandonando por completo AngularJS. Esto implica que no se puede reutilizar casi nada del código del framework (controladores, scopes, directivas de AngularJS).
+### Micro-Frontends (Module Federation): 
+La dependencia @angular-architects/module-federation y el script run:all son el indicio más claro. La nueva arquitectura no será un monolito como la actual. Se basará en micro-frontends, donde diferentes partes de la aplicación (como Seguridad, Cash, Afiliaciones) pueden ser desarrolladas y desplegadas de forma independiente como aplicaciones Angular separadas que se integran en un "shell" o contenedor principal.
 ### Componentes de UI:
 * PrimeNG: Has elegido PrimeNG como la biblioteca de componentes de UI principal. Esto reemplazará cualquier componente personalizado, Bootstrap o angular-strap que se usaba en la versión de AngularJS. Toda la interfaz de usuario deberá ser reconstruida con componentes de PrimeNG.
 * Herramientas de Desarrollo (Tooling):
@@ -52,23 +54,23 @@ Reescribir la plataforma desde AngularJS en el framework Angular 19.2.14 utiliza
 ## Plan de Migración (Reescritura)
 Esta no es una migración automática. Es un proyecto de reescritura que debe ser planificado cuidadosamente.
 ### Fase 1: Configuración y Arquitectura Base (Shell)
-Crear el Workspace: Utiliza Angular CLI para crear un nuevo workspace. No intentes hacerlo sobre el proyecto existente.
-Crear la Aplicación "Shell": Dentro del workspace, crea la aplicación principal que actuará como contenedor de los micro-frontends.
-Instalar Dependencias: Instala todas las dependencias de tu package.json objetivo en el nuevo proyecto shell. Configura Jest, Prettier y ESLint.
-Configurar Module Federation: Añade @angular-architects/module-federation al proyecto shell y configúralo. Este será el host que cargará las demás aplicaciones.
-Desarrollar el Layout Principal: Crea el layout base en la aplicación shell: la cabecera, el menú de navegación principal, el pie de página y el área de contenido (<router-outlet>). Este layout debe ser agnóstico a los módulos que se cargarán.
+1. Crear el Workspace: Utiliza Angular CLI para crear un nuevo workspace. No intentes hacerlo sobre el proyecto existente.
+2. Crear la Aplicación "Shell": Dentro del workspace, crea la aplicación principal que actuará como contenedor de los micro-frontends.
+3. Instalar Dependencias: Instala todas las dependencias de tu package.json objetivo en el nuevo proyecto shell. Configura Jest, Prettier y ESLint.
+4. Configurar Module Federation: Añade @angular-architects/module-federation al proyecto shell y configúralo. Este será el host que cargará las demás aplicaciones.
+5. Desarrollar el Layout Principal: Crea el layout base en la aplicación shell: la cabecera, el menú de navegación principal, el pie de página y el área de contenido (<router-outlet>). Este layout debe ser agnóstico a los módulos que se cargarán.
 
 ### Fase 2: Reescritura de Módulos como Micro-Frontends
 Elige un módulo del proyecto AngularJS para empezar, idealmente el más simple o el de autenticación.
 Crear el Micro-Frontend (MFE): Dentro del mismo workspace, genera una nueva aplicación Angular para el módulo.
 Configurar como MFE: Configura seguridad como un micro-frontend (remote) usando Module Federation, exponiendo su módulo principal.
 Reescribir Funcionalidades:
-* Análisis: Revisa las vistas, controladores y servicios del módulo EasySeguridad en el proyecto AngularJS.
-* Componentes: Reconstruye las vistas utilizando componentes de Angular y PrimeNG.
-* Lógica: Migra la lógica de los controladores de AngularJS a los componentes y servicios de Angular. La lógica de negocio (validaciones, cálculos) a menudo se puede migrar con pocos cambios, pero la interacción con el framework (como $scope o $http) debe ser reemplazada por la sintaxis de Angular (Input/Output, RxJS, HttpClient).
-* Servicios: Recrea los servicios para la comunicación con el BFF. Utiliza el HttpClient de Angular y tipa las respuestas con interfaces.
-* Integrar en el Shell: Configura el enrutamiento en la aplicación shell para que cargue perezosamente el módulo seguridad cuando el usuario navegue a la ruta correspondiente (ej: /seguridad).
-* Repetir: Repite los pasos 1-4 para cada módulo del monolito original (Cash, EasyAfiliaciones, etc.), convirtiendo cada uno en un micro-frontend.
+1. Análisis: Revisa las vistas, controladores y servicios del módulo EasySeguridad en el proyecto AngularJS.
+2. Componentes: Reconstruye las vistas utilizando componentes de Angular y PrimeNG.
+3. Lógica: Migra la lógica de los controladores de AngularJS a los componentes y servicios de Angular. La lógica de negocio (validaciones, cálculos) a menudo se puede migrar con pocos cambios, pero la interacción con el framework (como $scope o $http) debe ser reemplazada por la sintaxis de Angular (Input/Output, RxJS, HttpClient).
+4. Servicios: Recrea los servicios para la comunicación con el BFF. Utiliza el HttpClient de Angular y tipa las respuestas con interfaces.
+5. Integrar en el Shell: Configura el enrutamiento en la aplicación shell para que cargue perezosamente el módulo seguridad cuando el usuario navegue a la ruta correspondiente (ej: /seguridad).
+6. Repetir: Repite los pasos 1-4 para cada módulo del monolito original (Cash, EasyAfiliaciones, etc.), convirtiendo cada uno en un micro-frontend.
 
 ### Fase 3: Despliegue y Finalización
 Refinar la Comunicación: Asegúrate de que la comunicación entre micro-frontends (si es necesaria) esté bien gestionada, usando pubsub-js o una librería de estado compartida.
